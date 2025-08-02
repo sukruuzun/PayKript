@@ -42,36 +42,12 @@ class CryptoService:
             bip32 = BIP32.from_xpub(xpub)
             logger.debug("BIP32 objesi başarıyla oluşturuldu")
             
-            # Child key türet - BIP32 3.4 API'si için düzeltildi
-            # İlk olarak 0 (change=0), sonra index (address_index)
-            try:
-                # Method 1: get_child kullanmayı dene
-                child_bip32 = bip32.get_child(0)  # Change = 0 (receiving addresses)
-                final_bip32 = child_bip32.get_child(index)  # Address index
-            except AttributeError:
-                try:
-                    # Method 2: derive_child kullanmayı dene
-                    child_bip32 = bip32.derive_child(0)
-                    final_bip32 = child_bip32.derive_child(index)
-                except AttributeError:
-                    # Method 3: get_child_from_path kullan
-                    derivation_path = f"0/{index}"
-                    final_bip32 = bip32.get_child_from_path(derivation_path)
+            # BIP32 3.4 (darosior/python-bip32) doğru API kullanımı
+            # Direkt public key'i path ile al - 0=receiving addresses, index=address index  
+            derivation_path = f"0/{index}"
+            pubkey = bip32.get_pubkey_from_path(derivation_path)
             
-            logger.debug(f"Child key başarıyla türetildi - path: 0/{index}")
-            
-            # Public key'i al - BIP32 kütüphanesine göre düzeltildi
-            try:
-                # Method 1: public_key property'si
-                pubkey = final_bip32.public_key
-            except AttributeError:
-                try:
-                    # Method 2: pubkey property'si
-                    pubkey = final_bip32.pubkey
-                except AttributeError:
-                    # Method 3: key.public_key
-                    pubkey = final_bip32.key.public_key
-            
+            logger.debug(f"Child key başarıyla türetildi - path: {derivation_path}")
             logger.debug(f"Public key alındı: {len(pubkey)} bytes")
             
             # TRON adresi oluştur (exception fırlatabilir)
