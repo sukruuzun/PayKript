@@ -99,15 +99,20 @@ def main():
     logger.info("🔍 Blockchain monitoring arka planda başlatıldı")
     
     # FastAPI uygulamasını başlat
+    import os
+    port = int(os.getenv("PORT", 8000))  # Railway $PORT kullan, fallback 8000
+    
     logger.info("🌐 FastAPI sunucusu başlatılıyor...")
-    logger.info("📚 API Dokümantasyonu: http://localhost:8000/api/v1/docs")
+    logger.info(f"🚀 Port: {port} (Railway: $PORT={os.getenv('PORT', 'not set')})")
+    logger.info(f"📚 API Dokümantasyonu: http://localhost:{port}/api/v1/docs")
     logger.info("🛑 Durdurmak için Ctrl+C'ye basın")
     
     try:
+        
         uvicorn.run(
             "main:app",
             host="0.0.0.0",
-            port=8000,
+            port=port,
             reload=False,  # Production'da false olmalı
             log_level="info",
             access_log=True

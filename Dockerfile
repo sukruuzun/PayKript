@@ -24,12 +24,12 @@ COPY env.example .
 # Environment dosyasını kopyala (production'da .env olarak mount edilecek)
 RUN cp env.example .env
 
-# Port açma
+# Port açma (Railway dinamik port atar)
 EXPOSE 8000
 
-# Sağlık kontrolü
+# Sağlık kontrolü (Railway kendi health check'ini yapar)
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
 # Non-root kullanıcı oluştur
 RUN useradd --create-home --shell /bin/bash paykript
