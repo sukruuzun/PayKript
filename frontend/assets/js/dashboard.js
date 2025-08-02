@@ -169,6 +169,11 @@ async function validateToken() {
 // Dashboard verilerini yükle
 async function loadDashboardData() {
     try {
+        // İlk kez dashboard açılıyorsa aktif section'ı ayarla
+        if (!document.querySelector('.content-section.active')) {
+            showSection('dashboard-overview');
+        }
+        
         // Kullanıcı bilgilerini göster
         if (currentUser) {
             document.getElementById('user-name').textContent = 
@@ -571,34 +576,81 @@ function copyToClipboard(text) {
     });
 }
 
-// Toast bildirim gösterme
-function showToast(message, type = 'info') {
+// ========================================
+// TOAST NOTIFICATION SYSTEM  
+// ========================================
+
+// Enhanced toast system
+function showToast(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('toast-container') || createToastContainer();
+    
     const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+    toast.className = `toast ${type}`;
     toast.innerHTML = `
-        <div class="toast-content">
+        <div class="toast-icon">
             <i class="fas ${getToastIcon(type)}"></i>
-            <span>${message}</span>
         </div>
-        <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close" onclick="closeToast(this)">
+            <i class="fas fa-times"></i>
+        </button>
     `;
     
-    document.getElementById('toast-container').appendChild(toast);
+    container.appendChild(toast);
     
-    // Otomatik kaldırma
-    setTimeout(() => {
-        if (toast.parentElement) {
-            toast.remove();
-        }
-    }, 5000);
+    // Trigger animation
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+    });
+    
+    // Auto remove
+    const autoRemove = setTimeout(() => {
+        closeToast(toast.querySelector('.toast-close'));
+    }, duration);
+    
+    // Store timeout for manual close
+    toast.dataset.timeout = autoRemove;
+    
+    console.log(`📢 Toast shown: ${type} - ${message}`);
 }
 
+// Create toast container if not exists
+function createToastContainer() {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    return container;
+}
+
+// Close toast
+function closeToast(closeBtn) {
+    const toast = closeBtn.closest('.toast');
+    if (toast) {
+        // Clear auto-remove timeout
+        if (toast.dataset.timeout) {
+            clearTimeout(parseInt(toast.dataset.timeout));
+        }
+        
+        toast.classList.remove('show');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }
+}
+
+// Toast ikonları
 function getToastIcon(type) {
     const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
+        success: 'fa-check',
+        error: 'fa-exclamation',
         warning: 'fa-exclamation-triangle',
-        info: 'fa-info-circle'
+        info: 'fa-info'
     };
     return icons[type] || icons.info;
 }
@@ -619,14 +671,129 @@ function togglePassword() {
     }
 }
 
+// ========================================
+// NAVIGATION & UI MANAGEMENT
+// ========================================
+
+// Section navigation
+function showSection(sectionId) {
+    console.log('📍 Navigating to section:', sectionId);
+    
+    // Hide all sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Show target section
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+        
+        // Update page title
+        const sectionTitles = {
+            'dashboard-overview': 'Dashboard',
+            'payments': 'Ödemeler',
+            'wallets': 'Cüzdanlar',
+            'api-keys': 'API Anahtarları',
+            'settings': 'Ayarlar',
+            'profile': 'Profil'
+        };
+        
+        const pageTitle = document.getElementById('page-title');
+        if (pageTitle) {
+            pageTitle.textContent = sectionTitles[sectionId] || 'Dashboard';
+        }
+        
+        // Update active menu item
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        const activeMenuItem = document.querySelector(`[onclick="showSection('${sectionId}')"]`)?.parentElement;
+        if (activeMenuItem) {
+            activeMenuItem.classList.add('active');
+        }
+        
+        // Load section data
+        loadSectionData(sectionId);
+        
+        // Close mobile sidebar if open
+        closeMobileSidebar();
+        
+        currentSection = sectionId;
+        console.log('✅ Section activated:', sectionId);
+    } else {
+        console.error('❌ Section not found:', sectionId);
+    }
+}
+
+// Load section-specific data
+function loadSectionData(sectionId) {
+    switch(sectionId) {
+        case 'dashboard-overview':
+            loadDashboardData();
+            break;
+        case 'payments': 
+            loadPayments();
+            break;
+        case 'wallets':
+            loadWallets();
+            break;
+        case 'api-keys':
+            loadApiKeys();
+            break;
+        case 'settings':
+        case 'profile':
+            // Profile data is loaded in loadDashboardData
+            break;
+    }
+}
+
 // Sidebar toggle (mobil)
 function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('open');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay') || createSidebarOverlay();
+    
+    if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+    }
+}
+
+// Create sidebar overlay for mobile
+function createSidebarOverlay() {
+    let overlay = document.querySelector('.sidebar-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'sidebar-overlay';
+        overlay.addEventListener('click', closeMobileSidebar);
+        document.body.appendChild(overlay);
+    }
+    return overlay;
+}
+
+// Close mobile sidebar
+function closeMobileSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    
+    if (sidebar) sidebar.classList.remove('show');
+    if (overlay) overlay.classList.remove('show');
+    document.body.style.overflow = '';
 }
 
 // User menu toggle
 function toggleUserMenu() {
-    document.getElementById('user-dropdown').classList.toggle('show');
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// Register form toggle (for future use)
+function showRegisterForm() {
+    showToast('Kayıt özelliği yakında eklenecek!', 'info');
 }
 
 // Dışarı tıklanınca user menu'yu kapat
@@ -695,6 +862,203 @@ async function deleteApiKey(keyId) {
     } catch (error) {
         showToast('API anahtarı silinemedi: ' + error.message, 'error');
     }
+}
+
+// ========================================
+// MODAL MANAGEMENT
+// ========================================
+
+// Show modal
+function showModal(modalId) {
+    const overlay = document.getElementById('modal-overlay');
+    const modal = document.getElementById(modalId);
+    
+    if (overlay && modal) {
+        overlay.classList.remove('hidden');
+        
+        // Force reflow for animation
+        overlay.offsetHeight;
+        overlay.classList.add('show');
+        
+        // Hide all modals first
+        overlay.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+        
+        // Show target modal
+        modal.style.display = 'block';
+        
+        // Prevent body scrolling
+        document.body.style.overflow = 'hidden';
+        
+        // Focus first input
+        const firstInput = modal.querySelector('input, select, textarea');
+        if (firstInput) {
+            setTimeout(() => firstInput.focus(), 100);
+        }
+        
+        console.log('✅ Modal opened:', modalId);
+    }
+}
+
+// Close modal
+function closeModal() {
+    const overlay = document.getElementById('modal-overlay');
+    
+    if (overlay) {
+        overlay.classList.remove('show');
+        
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+            // Hide all modals
+            overlay.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            
+            // Restore body scrolling
+            document.body.style.overflow = '';
+            
+            // Clear form data
+            overlay.querySelectorAll('form').forEach(form => form.reset());
+        }, 300);
+        
+        console.log('✅ Modal closed');
+    }
+}
+
+// Modal-specific show functions
+function showAddWalletModal() {
+    showModal('add-wallet-modal');
+}
+
+function showAddApiKeyModal() {
+    showModal('add-api-key-modal');
+}
+
+// Keyboard support for modals
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const overlay = document.getElementById('modal-overlay');
+        if (overlay && !overlay.classList.contains('hidden')) {
+            closeModal();
+        }
+    }
+});
+
+// ========================================
+// UTILITY FUNCTIONS
+// ========================================
+
+// Copy to clipboard
+function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Panoya kopyalandı!', 'success');
+        }).catch(() => {
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        fallbackCopyToClipboard(text);
+    }
+}
+
+// Fallback copy function
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showToast('Panoya kopyalandı!', 'success');
+    } catch (err) {
+        showToast('Kopyalama başarısız!', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Format date
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('tr-TR', {
+        year: 'numeric',
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Format amount
+function formatAmount(amount, currency = 'USDT') {
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount)) return '0 ' + currency;
+    
+    return numAmount.toLocaleString('tr-TR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6
+    }) + ' ' + currency;
+}
+
+// Truncate text
+function truncateText(text, maxLength = 30) {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+}
+
+// Debounce function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// ========================================
+// DATA RENDERING FUNCTIONS
+// ========================================
+
+// Render payment list item
+function renderPaymentListItem(payment) {
+    return `
+        <div class="payment-item" style="padding: 16px 24px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="font-weight: 600; color: var(--gray-900); margin-bottom: 4px;">
+                    ${formatAmount(payment.amount)}
+                </div>
+                <div style="font-size: 0.875rem; color: var(--gray-600);">
+                    ${truncateText(payment.order_id, 20)}
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div class="status-badge status-${payment.status}" style="margin-bottom: 4px;">
+                    ${getStatusText(payment.status)}
+                </div>
+                <div style="font-size: 0.8rem; color: var(--gray-500);">
+                    ${formatDate(payment.created_at)}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Get status text
+function getStatusText(status) {
+    const statusTexts = {
+        'pending': 'Bekliyor',
+        'confirmed': 'Onaylandı', 
+        'expired': 'Süresi Doldu',
+        'cancelled': 'İptal'
+    };
+    return statusTexts[status] || status;
 }
 
 // Ödeme detaylarını görüntüleme
