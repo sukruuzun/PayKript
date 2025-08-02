@@ -19,10 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Uygulama kodlarını kopyala
 COPY backend/ ./backend/
 COPY start.py .
-COPY env.example .
-
-# Environment dosyasını kopyala (production'da .env olarak mount edilecek)
-RUN cp env.example .env
 
 # Port açma (Railway dinamik port atar)
 EXPOSE 8000
