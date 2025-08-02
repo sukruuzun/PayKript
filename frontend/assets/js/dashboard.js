@@ -7,23 +7,52 @@ let authToken = localStorage.getItem('paykript_token');
 
 // Sayfa yüklendiğinde
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('📄 DOM yüklendi, PayKript başlatılıyor');
     initializeDashboard();
     setupEventListeners();
+    
+    // Fallback: 15 saniye sonra loading'i kesinlikle gizle
+    setTimeout(() => {
+        console.log('⏰ Fallback timer: Loading overlay zorla gizleniyor');
+        hideLoading();
+    }, 15000);
 });
+
+// Acil durum: Sayfa yüklendikten 20 saniye sonra loading'i gizle
+setTimeout(() => {
+    console.log('🚨 Acil durum fallback: Loading overlay zorla gizleniyor');
+    hideLoading();
+}, 20000);
 
 // Dashboard başlatma
 function initializeDashboard() {
+    console.log('🚀 PayKript Dashboard başlatılıyor...');
+    
     if (authToken) {
+        console.log('🔑 Token mevcut, doğrulanıyor...');
         // Token geçerliliğini kontrol et
-        validateToken().then(valid => {
-            if (valid) {
-                showDashboard();
-                loadDashboardData();
-            } else {
+        validateToken()
+            .then(valid => {
+                console.log('✅ Token doğrulama sonucu:', valid);
+                if (valid) {
+                    showDashboard();
+                    loadDashboardData();
+                } else {
+                    console.log('❌ Token geçersiz, login\'e yönlendiriliyor');
+                    localStorage.removeItem('paykript_token');
+                    authToken = null;
+                    showLogin();
+                }
+            })
+            .catch(error => {
+                console.error('❌ Token doğrulama hatası:', error);
+                // Hata durumunda da login'e yönlendir
+                localStorage.removeItem('paykript_token');
+                authToken = null;
                 showLogin();
-            }
-        });
+            });
     } else {
+        console.log('🔓 Token yok, login ekranı gösteriliyor');
         showLogin();
     }
 }
@@ -55,16 +84,47 @@ function setupEventListeners() {
 
 // Login göster
 function showLogin() {
-    document.getElementById('login-screen').classList.remove('hidden');
-    document.getElementById('dashboard').classList.add('hidden');
-    document.getElementById('loading-overlay').classList.add('hidden');
+    console.log('🔐 Login ekranı gösteriliyor');
+    
+    try {
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('dashboard').classList.add('hidden');
+        document.getElementById('loading-overlay').classList.add('hidden');
+        console.log('✅ Login ekranı başarıyla gösterildi, loading gizlendi');
+    } catch (error) {
+        console.error('❌ Login ekranı gösterme hatası:', error);
+        // En azından loading'i gizle
+        hideLoading();
+    }
 }
 
 // Dashboard göster
 function showDashboard() {
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    document.getElementById('loading-overlay').classList.add('hidden');
+    console.log('📊 Dashboard gösteriliyor');
+    
+    try {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        document.getElementById('loading-overlay').classList.add('hidden');
+        console.log('✅ Dashboard başarıyla gösterildi, loading gizlendi');
+    } catch (error) {
+        console.error('❌ Dashboard gösterme hatası:', error);
+        // En azından loading'i gizle
+        hideLoading();
+    }
+}
+
+// Loading'i güvenli şekilde gizle
+function hideLoading() {
+    try {
+        const loadingElement = document.getElementById('loading-overlay');
+        if (loadingElement) {
+            loadingElement.classList.add('hidden');
+            console.log('✅ Loading overlay gizlendi');
+        }
+    } catch (error) {
+        console.error('❌ Loading gizleme hatası:', error);
+    }
 }
 
 // Loading göster/gizle
@@ -119,12 +179,28 @@ function logout() {
 
 // Token geçerliliği kontrol et
 async function validateToken() {
-    if (!authToken) return false;
+    if (!authToken) {
+        console.log('❌ Token bulunamadı');
+        return false;
+    }
     
     try {
-        const response = await api.validateToken();
-        return response.valid;
+        console.log('🔄 API token doğrulaması başlatılıyor...');
+        
+        // 10 saniye timeout ekle
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Token doğrulama timeout')), 10000);
+        });
+        
+        const response = await Promise.race([
+            api.validateToken(),
+            timeoutPromise
+        ]);
+        
+        console.log('📡 Token doğrulama yanıtı:', response);
+        return response && response.valid === true;
     } catch (error) {
+        console.error('❌ Token doğrulama hatası:', error.message);
         return false;
     }
 }
