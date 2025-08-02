@@ -73,7 +73,7 @@ class WC_Gateway_PayKript extends WC_Payment_Gateway {
                 'title' => __('API URL', 'paykript'),
                 'type' => 'text',
                 'description' => __('PayKript API sunucu adresi', 'paykript'),
-                'default' => 'https://api.paykript.com/api/v1',
+                'default' => 'https://paykript-production.up.railway.app/api/v1',
                 'desc_tip' => true,
             ),
             'api_key' => array(
