@@ -2,6 +2,8 @@
 """
 PayKript - Kripto Ödeme Doğrulama Platformu
 Başlatma scripti
+
+Railway Sync: Force redeploy for syntax fix - 2025-08-02
 """
 
 import sys
