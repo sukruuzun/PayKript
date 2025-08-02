@@ -54,9 +54,9 @@ class CryptoService:
                     child_bip32 = bip32.derive_child(0)
                     final_bip32 = child_bip32.derive_child(index)
                 except AttributeError:
-                    # Method 3: Hardened derivation path kullan
+                    # Method 3: get_child_from_path kullan
                     derivation_path = f"0/{index}"
-                    final_bip32 = bip32.derive_path(derivation_path)
+                    final_bip32 = bip32.get_child_from_path(derivation_path)
             
             logger.debug(f"Child key başarıyla türetildi - path: 0/{index}")
             
