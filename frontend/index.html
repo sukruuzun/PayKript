@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayKript - Satıcı Paneli</title>
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Yükleniyor...</p>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <h1 class="login-logo">
+                    <i class="fas fa-coins"></i>
+                    PayKript
+                </h1>
+                <h2>Satıcı Paneli</h2>
+                <p>TRON ağında güvenli USDT ödemeleri</p>
+            </div>
+
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="email">E-posta Adresi</label>
+                    <div class="input-container">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" required placeholder="ornek@email.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Şifre</label>
+                    <div class="input-container">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" required placeholder="Şifrenizi girin">
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Giriş Yap
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>Hesabınız yok mu? <a href="#" onclick="showRegisterForm()">Kaydol</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard hidden">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-logo">
+                    <i class="fas fa-coins"></i>
+                    PayKript
+                </h1>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="menu-item active">
+                    <a href="#" onclick="showSection('dashboard-overview')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" onclick="showSection('payments')">
+                        <i class="fas fa-credit-card"></i>
+                        Ödemeler
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" onclick="showSection('wallets')">
+                        <i class="fas fa-wallet"></i>
+                        Cüzdanlar
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" onclick="showSection('api-keys')">
+                        <i class="fas fa-key"></i>
+                        API Anahtarları
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#" onclick="showSection('settings')">
+                        <i class="fas fa-cog"></i>
+                        Ayarlar
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Çıkış Yap
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+
+                <div class="header-right">
+                    <div class="user-menu">
+                        <button class="user-btn" onclick="toggleUserMenu()">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="user-name">Kullanıcı</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="#" onclick="showSection('profile')">
+                                <i class="fas fa-user"></i>
+                                Profil
+                            </a>
+                            <a href="#" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Çıkış Yap
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Overview -->
+            <section id="dashboard-overview" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-payments">0</h3>
+                            <p>Toplam Ödeme</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="confirmed-payments">0</h3>
+                            <p>Onaylanan Ödeme</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pending-payments">0</h3>
+                            <p>Bekleyen Ödeme</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-amount">0 USDT</h3>
+                            <p>Toplam Tutar</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-widgets">
+                    <div class="widget">
+                        <div class="widget-header">
+                            <h3>Son Ödemeler</h3>
+                            <a href="#" onclick="showSection('payments')" class="widget-link">Tümünü Gör</a>
+                        </div>
+                        <div class="widget-content">
+                            <div id="recent-payments" class="payment-list">
+                                <!-- Dinamik içerik -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget">
+                        <div class="widget-header">
+                            <h3>Bugünkü İstatistikler</h3>
+                        </div>
+                        <div class="widget-content">
+                            <div class="today-stats">
+                                <div class="today-stat">
+                                    <span class="stat-label">Bugünkü Ödemeler</span>
+                                    <span class="stat-value" id="today-payments">0</span>
+                                </div>
+                                <div class="today-stat">
+                                    <span class="stat-label">Bugünkü Tutar</span>
+                                    <span class="stat-value" id="today-amount">0 USDT</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Payments Section -->
+            <section id="payments" class="content-section">
+                <div class="section-header">
+                    <h2>Ödemeler</h2>
+                    <div class="section-actions">
+                        <select id="payment-filter" onchange="filterPayments()">
+                            <option value="">Tüm Durumlar</option>
+                            <option value="pending">Bekleyen</option>
+                            <option value="confirmed">Onaylanan</option>
+                            <option value="expired">Süresi Dolmuş</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="refreshPayments()">
+                            <i class="fas fa-sync-alt"></i>
+                            Yenile
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Sipariş ID</th>
+                                <th>Tutar</th>
+                                <th>Durum</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payments-table-body">
+                            <!-- Dinamik içerik -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="payments-pagination">
+                    <!-- Dinamik sayfalama -->
+                </div>
+            </section>
+
+            <!-- Wallets Section -->
+            <section id="wallets" class="content-section">
+                <div class="section-header">
+                    <h2>Cüzdanlar</h2>
+                    <button class="btn btn-primary" onclick="showAddWalletModal()">
+                        <i class="fas fa-plus"></i>
+                        Cüzdan Ekle
+                    </button>
+                </div>
+
+                <div id="wallets-list" class="wallets-grid">
+                    <!-- Dinamik içerik -->
+                </div>
+            </section>
+
+            <!-- API Keys Section -->
+            <section id="api-keys" class="content-section">
+                <div class="section-header">
+                    <h2>API Anahtarları</h2>
+                    <button class="btn btn-primary" onclick="showAddApiKeyModal()">
+                        <i class="fas fa-plus"></i>
+                        API Anahtarı Oluştur
+                    </button>
+                </div>
+
+                <div id="api-keys-list" class="api-keys-grid">
+                    <!-- Dinamik içerik -->
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <div class="section-header">
+                    <h2>Ayarlar</h2>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>Profil Bilgileri</h3>
+                        <form id="profile-form">
+                            <div class="form-group">
+                                <label for="full-name">Ad Soyad</label>
+                                <input type="text" id="full-name" name="full_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="company-name">Şirket Adı</label>
+                                <input type="text" id="company-name" name="company_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Telefon</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Güncelle</button>
+                        </form>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>Şifre Değiştir</h3>
+                        <form id="password-form">
+                            <div class="form-group">
+                                <label for="current-password">Mevcut Şifre</label>
+                                <input type="password" id="current-password" name="current_password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">Yeni Şifre</label>
+                                <input type="password" id="new-password" name="new_password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">Yeni Şifre (Tekrar)</label>
+                                <input type="password" id="confirm-password" name="confirm_password" required>
+                            </div>
+                            <button type="submit" class="btn btn-warning">Şifreyi Değiştir</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <!-- Add Wallet Modal -->
+        <div id="add-wallet-modal" class="modal">
+            <div class="modal-header">
+                <h3>Yeni Cüzdan Ekle</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-wallet-form">
+                    <div class="form-group">
+                        <label for="wallet-name">Cüzdan Adı</label>
+                        <input type="text" id="wallet-name" name="wallet_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="xpub-key">xPub Anahtarı</label>
+                        <textarea id="xpub-key" name="xpub_key" rows="3" required placeholder="xpub..."></textarea>
+                        <small>TRON cüzdanınızdan extended public key'i girin</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">İptal</button>
+                        <button type="submit" class="btn btn-primary">Cüzdan Ekle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add API Key Modal -->
+        <div id="add-api-key-modal" class="modal">
+            <div class="modal-header">
+                <h3>Yeni API Anahtarı</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-api-key-form">
+                    <div class="form-group">
+                        <label for="api-key-name">API Anahtarı Adı</label>
+                        <input type="text" id="api-key-name" name="key_name" required placeholder="WordPress Sitesi">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">İptal</button>
+                        <button type="submit" class="btn btn-primary">Oluştur</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html> 

@@ -1,0 +1,199 @@
+# PayKript .gitignore
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.staging
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.metadata
+.classpath
+.settings/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.docker/
+
+# Node.js (if using for frontend build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+
+# Rope
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# SSL certificates (if storing locally)
+*.pem
+*.key
+*.crt
+*.cert
+
+# Production files
+production.env
+secrets/
+
+# Test files
+test_results/
+.pytest_cache/
+
+# Local configuration overrides
+local_settings.py
+local_config.py
+
+# WordPress plugin development
+wordpress-plugin/vendor/
+wordpress-plugin/node_modules/
+
+# Frontend build artifacts
+frontend/dist/
+frontend/build/
+frontend/.nuxt/
+frontend/.next/
+
+# API keys and secrets (extra safety)
+*api_key*
+*secret*
+*private*
+config/production.json
+
+# Documentation build
+docs/_build/
+
+# Alembic (if using for migrations)
+alembic/versions/*.py
+!alembic/versions/.gitkeep
+
+# Redis dump
+dump.rdb
+
+# Local development overrides
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Monitoring and profiling
+*.prof
+*.profile
+
+# Blockchain specific
+*.wallet
+keystore/
+
+# MacOS
+.AppleDouble
+.LSOverride
+
+# Windows
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs* 

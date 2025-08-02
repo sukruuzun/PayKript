@@ -1,0 +1,488 @@
+/* PayKript Payment Gateway Styles */
+
+.paykript-payment-container {
+    max-width: 800px;
+    margin: 20px auto;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.paykript-payment-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.paykript-payment-header h3 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.paykript-payment-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+/* Success State */
+.paykript-payment-success {
+    padding: 40px 30px;
+    text-align: center;
+    background: #f8fff8;
+    border-left: 5px solid #4CAF50;
+}
+
+.paykript-payment-success .success-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.paykript-payment-success h4 {
+    color: #2E7D32;
+    margin: 0 0 15px;
+    font-size: 24px;
+}
+
+.paykript-payment-success p {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Expired State */
+.paykript-payment-expired {
+    padding: 40px 30px;
+    text-align: center;
+    background: #fff8f8;
+    border-left: 5px solid #f44336;
+}
+
+.paykript-payment-expired .error-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.paykript-payment-expired h4 {
+    color: #c62828;
+    margin: 0 0 15px;
+    font-size: 24px;
+}
+
+.paykript-payment-expired p {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Pending Payment State */
+.paykript-payment-pending {
+    padding: 30px;
+}
+
+.payment-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .payment-info-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* QR Code Section */
+.payment-qr {
+    text-align: center;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
+
+.payment-qr h4 {
+    margin: 0 0 20px;
+    color: #333;
+    font-size: 18px;
+}
+
+.qr-code-container {
+    margin: 20px 0;
+}
+
+.qr-code-image {
+    max-width: 200px;
+    width: 100%;
+    height: auto;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.qr-instructions {
+    font-size: 14px;
+    color: #666;
+    margin: 15px 0 0;
+    line-height: 1.4;
+}
+
+.qr-placeholder {
+    padding: 40px 20px;
+    color: #999;
+    font-style: italic;
+}
+
+/* Payment Details Section */
+.payment-details h4 {
+    margin: 0 0 20px;
+    color: #333;
+    font-size: 18px;
+}
+
+.payment-field {
+    margin-bottom: 20px;
+}
+
+.payment-field label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.address-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.payment-address {
+    flex: 1;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+.copy-button {
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: background 0.3s ease;
+}
+
+.copy-button:hover {
+    background: #5a67d8;
+}
+
+.payment-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2D3748;
+    background: #EDF2F7;
+    padding: 10px 15px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.network-info {
+    background: #E6FFFA;
+    color: #234E52;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Countdown Timer */
+.countdown-timer {
+    background: #FFF5F5;
+    border: 2px solid #FED7D7;
+    border-radius: 6px;
+    padding: 10px 15px;
+    display: inline-block;
+}
+
+#time-remaining {
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: #C53030;
+}
+
+/* Payment Status Checker */
+.payment-status-checker {
+    background: #f0f8ff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+    border: 1px solid #e1f5fe;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#status-text {
+    font-weight: 500;
+    color: #2D3748;
+}
+
+.manual-check {
+    margin-top: 15px;
+}
+
+#check-payment-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+#check-payment-btn:hover:not(:disabled) {
+    background: #5a67d8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+#check-payment-btn:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Payment Instructions */
+.payment-instructions {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 25px;
+    margin-top: 20px;
+}
+
+.payment-instructions h4 {
+    margin: 0 0 20px;
+    color: #2D3748;
+    font-size: 18px;
+}
+
+.payment-instructions ol {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.payment-instructions li {
+    margin-bottom: 8px;
+    color: #4A5568;
+}
+
+.important-notes {
+    margin-top: 25px;
+    padding: 20px;
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    border-radius: 0 6px 6px 0;
+}
+
+.important-notes h5 {
+    margin: 0 0 15px;
+    color: #92400e;
+    font-size: 16px;
+}
+
+.important-notes ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.important-notes li {
+    margin-bottom: 8px;
+    color: #78350f;
+    line-height: 1.5;
+}
+
+/* Button Styles */
+.button {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #667eea;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.button:hover {
+    background: #5a67d8;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .paykript-payment-container {
+        margin: 10px;
+        border-radius: 8px;
+    }
+    
+    .paykript-payment-header {
+        padding: 20px;
+    }
+    
+    .paykript-payment-header h3 {
+        font-size: 20px;
+    }
+    
+    .paykript-payment-pending {
+        padding: 20px;
+    }
+    
+    .address-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .copy-button {
+        align-self: center;
+        width: fit-content;
+    }
+    
+    .payment-amount {
+        font-size: 18px;
+    }
+    
+    .qr-code-image {
+        max-width: 180px;
+    }
+}
+
+/* WooCommerce Integration */
+.woocommerce .paykript-payment-container {
+    margin: 20px 0;
+}
+
+.woocommerce-order-received .paykript-payment-container {
+    margin-top: 30px;
+}
+
+/* Admin Styles */
+.paykript-admin-notice {
+    padding: 12px;
+    margin: 15px 0;
+    border-left: 4px solid #667eea;
+    background: #f0f8ff;
+}
+
+.paykript-admin-notice.error {
+    border-left-color: #f44336;
+    background: #fff5f5;
+}
+
+.paykript-admin-notice.success {
+    border-left-color: #4CAF50;
+    background: #f0fff4;
+}
+
+/* Loading States */
+.paykript-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.paykript-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus States */
+.copy-button:focus,
+#check-payment-btn:focus,
+.button:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .paykript-payment-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .payment-status-checker,
+    .copy-button,
+    #check-payment-btn {
+        display: none;
+    }
+    
+    .spinner {
+        display: none;
+    }
+} 
