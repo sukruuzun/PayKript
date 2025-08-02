@@ -18,9 +18,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port (Railway handles this automatically)
 EXPOSE 80
 
-# Health check endpoint
+# Health check endpoint - uses dedicated /health endpoint
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
+    CMD curl -f http://localhost/health || exit 1
 
 # Start nginx server
 CMD ["nginx", "-g", "daemon off;"] 
