@@ -36,17 +36,47 @@ class CryptoService:
             CryptoAddressGenerationError: Adres oluşturulamazsa
         """
         try:
+            logger.info(f"xPub'dan adres türetiliyor: index={index}")
+            
             # BIP32 objesi oluştur
             bip32 = BIP32.from_xpub(xpub)
+            logger.debug("BIP32 objesi başarıyla oluşturuldu")
             
-            # Child key türet (0/index formatında)
-            child_key = bip32.get_child_from_path(f"0/{index}")
+            # Child key türet - BIP32 3.4 API'si için düzeltildi
+            # İlk olarak 0 (change=0), sonra index (address_index)
+            try:
+                # Method 1: get_child kullanmayı dene
+                child_bip32 = bip32.get_child(0)  # Change = 0 (receiving addresses)
+                final_bip32 = child_bip32.get_child(index)  # Address index
+            except AttributeError:
+                try:
+                    # Method 2: derive_child kullanmayı dene
+                    child_bip32 = bip32.derive_child(0)
+                    final_bip32 = child_bip32.derive_child(index)
+                except AttributeError:
+                    # Method 3: Hardened derivation path kullan
+                    derivation_path = f"0/{index}"
+                    final_bip32 = bip32.derive_path(derivation_path)
             
-            # Public key'i al
-            pubkey = child_key.pubkey
+            logger.debug(f"Child key başarıyla türetildi - path: 0/{index}")
+            
+            # Public key'i al - BIP32 kütüphanesine göre düzeltildi
+            try:
+                # Method 1: public_key property'si
+                pubkey = final_bip32.public_key
+            except AttributeError:
+                try:
+                    # Method 2: pubkey property'si
+                    pubkey = final_bip32.pubkey
+                except AttributeError:
+                    # Method 3: key.public_key
+                    pubkey = final_bip32.key.public_key
+            
+            logger.debug(f"Public key alındı: {len(pubkey)} bytes")
             
             # TRON adresi oluştur (exception fırlatabilir)
             tron_address = CryptoService._pubkey_to_tron_address(pubkey)
+            logger.info(f"TRON adresi başarıyla türetildi: {tron_address}")
             
             return tron_address
             
@@ -63,34 +93,57 @@ class CryptoService:
         Public key'den TRON adresi oluştur
         """
         try:
+            logger.debug(f"TRON adres oluşturuluyor - Public key uzunluğu: {len(pubkey)} bytes")
+            
             # Keccak256 hash
             from Crypto.Hash import keccak
             
-            # Uncompressed public key (65 bytes) kullan
-            if len(pubkey) == 33:  # Compressed
-                # Compressed'dan uncompressed'a çevir
+            # Public key formatını kontrol et ve düzelt
+            if len(pubkey) == 33:  # Compressed key (33 bytes)
+                logger.debug("Compressed public key tespit edildi, uncompressed'a çeviriliyor")
+                
+                # Compressed key'i uncompressed'a çevir
                 from cryptography.hazmat.primitives.asymmetric import ec
                 from cryptography.hazmat.primitives import serialization
+                from cryptography.hazmat.backends import default_backend
                 
-                # Bu kısım daha kompleks, basit implementasyon için
-                # compressed key'i kullanabiliriz
-                pass
+                # Public key objesi oluştur
+                public_key_obj = ec.EllipticCurvePublicKey.from_encoded_point(
+                    ec.SECP256K1(), pubkey
+                )
+                
+                # Uncompressed format'a çevir
+                uncompressed_bytes = public_key_obj.public_bytes(
+                    encoding=serialization.Encoding.X962,
+                    format=serialization.PublicFormat.UncompressedPoint
+                )
+                pubkey = uncompressed_bytes
+                logger.debug(f"Uncompressed public key uzunluğu: {len(pubkey)} bytes")
+                
+            elif len(pubkey) == 65:  # Uncompressed key (65 bytes)
+                logger.debug("Uncompressed public key tespit edildi")
+            else:
+                raise CryptoAddressGenerationError(f"Geçersiz public key uzunluğu: {len(pubkey)} bytes")
             
-            # Keccak256 hash'i al (son 20 byte)
+            # Keccak256 hash'i al (ilk byte'ı 0x04 atla, son 20 byte'ı al)
             k = keccak.new(digest_bits=256)
             k.update(pubkey[1:])  # İlk byte'ı (0x04) atla
             pubkey_hash = k.digest()[-20:]
+            logger.debug(f"Keccak256 hash alındı: {pubkey_hash.hex()}")
             
             # TRON prefix'i ekle (0x41)
             address_hex = b'\x41' + pubkey_hash
+            logger.debug(f"TRON prefix eklendi: {address_hex.hex()}")
             
             # Double SHA256 checksum
             checksum = hashlib.sha256(hashlib.sha256(address_hex).digest()).digest()[:4]
+            logger.debug(f"Checksum hesaplandı: {checksum.hex()}")
             
             # Base58 encode
             address_bytes = address_hex + checksum
             address = base58.b58encode(address_bytes).decode('utf-8')
             
+            logger.info(f"TRON adresi başarıyla oluşturuldu: {address}")
             return address
             
         except Exception as e:
