@@ -39,16 +39,16 @@ async def create_wallet(
         )
     
     # Test adresi oluşturmayı dene
-    test_address = CryptoService.derive_address_from_xpub(
-        wallet_data.xpub_key, 
-        0, 
-        wallet_data.derivation_path
-    )
-    
-    if not test_address:
+    try:
+        test_address = CryptoService.derive_address_from_xpub(
+            wallet_data.xpub_key, 
+            0, 
+            wallet_data.derivation_path
+        )
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="xPub anahtarından adres oluşturulamadı"
+            detail=f"xPub anahtarından adres oluşturulamadı: {str(e)}"
         )
     
     # Kullanıcının diğer cüzdanlarını deaktif et (tek aktif cüzdan)
@@ -181,16 +181,16 @@ async def generate_test_address(
         )
     
     # Test adresi oluştur
-    test_address = CryptoService.derive_address_from_xpub(
-        wallet.xpub_key, 
-        0,  # Test için index 0 kullan
-        wallet.derivation_path
-    )
-    
-    if not test_address:
+    try:
+        test_address = CryptoService.derive_address_from_xpub(
+            wallet.xpub_key, 
+            0,  # Test için index 0 kullan
+            wallet.derivation_path
+        )
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Test adresi oluşturulamadı"
+            detail=f"Test adresi oluşturulamadı: {str(e)}"
         )
     
     return {
@@ -220,7 +220,7 @@ async def create_api_key(
         user_id=current_user.id,
         key_name=api_key_data.key_name,
         api_key=api_key,
-        secret_key=secret_hash,
+        secret_key_hash=secret_hash,  # Hash'lenmiş secret key
         is_active=True
     )
     

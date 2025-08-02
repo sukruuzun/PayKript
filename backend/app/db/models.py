@@ -69,7 +69,7 @@ class APIKey(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     key_name = Column(String(255), nullable=False)  # Kullanıcının verdiği isim
     api_key = Column(String(255), unique=True, index=True, nullable=False)
-    secret_key = Column(String(255), nullable=False)
+    secret_key_hash = Column(String(255), nullable=False)  # Hash'lenmiş secret key
     is_active = Column(Boolean, default=True)
     last_used_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

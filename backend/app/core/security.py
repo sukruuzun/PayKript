@@ -67,9 +67,25 @@ def generate_secret_key() -> str:
 def verify_api_credentials(api_key: str, secret_key: str, stored_api_key: str, stored_secret_hash: str) -> bool:
     """
     API anahtarı ve secret key'i doğrula
+    
+    Args:
+        api_key: Kullanıcının gönderdiği API key (düz text)
+        secret_key: Kullanıcının gönderdiği secret key (düz text)
+        stored_api_key: Veritabanında saklanan API key (düz text)
+        stored_secret_hash: Veritabanında saklanan secret key hash'i
+    
+    Returns:
+        bool: Credentials geçerliyse True
+        
+    Security Note:
+        - API key timing attack'lara karşı secrets.compare_digest kullanır
+        - Secret key bcrypt hash ile doğrulanır
     """
-    if api_key != stored_api_key:
+    # API key kontrolü - timing attack koruması
+    if not secrets.compare_digest(api_key, stored_api_key):
         return False
+    
+    # Secret key kontrolü - hash karşılaştırma
     return verify_password(secret_key, stored_secret_hash)
 
 def create_webhook_signature(payload: str, secret: str) -> str:

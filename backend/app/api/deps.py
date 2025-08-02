@@ -100,7 +100,7 @@ async def get_api_user(
         raise AuthenticationError("Geçersiz API anahtarı")
     
     # Secret key'i doğrula
-    if not verify_api_credentials(api_key, secret_key, api_key_obj.api_key, api_key_obj.secret_key):
+            if not verify_api_credentials(api_key, secret_key, api_key_obj.api_key, api_key_obj.secret_key_hash):
         raise AuthenticationError("Geçersiz API credentials")
     
     # Kullanıcıyı al

@@ -11,16 +11,29 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class CryptoAddressGenerationError(Exception):
+    """
+    Kripto adres oluşturma hatası
+    CRITICAL: Bu hata müşteri ödemelerinin kaybolmasını önler
+    """
+    pass
+
 class CryptoService:
     """
     Kripto işlemleri için yardımcı sınıf
     """
     
     @staticmethod
-    def derive_address_from_xpub(xpub: str, index: int, derivation_path: str = "m/44'/195'/0'/0") -> Optional[str]:
+    def derive_address_from_xpub(xpub: str, index: int, derivation_path: str = "m/44'/195'/0'/0") -> str:
         """
         xPub anahtarından belirli index'teki adresi türet
         TRON ağı için optimize edilmiş
+        
+        Returns:
+            str: TRON adresi
+            
+        Raises:
+            CryptoAddressGenerationError: Adres oluşturulamazsa
         """
         try:
             # BIP32 objesi oluştur
@@ -32,14 +45,17 @@ class CryptoService:
             # Public key'i al
             pubkey = child_key.pubkey
             
-            # TRON adresi oluştur
+            # TRON adresi oluştur (exception fırlatabilir)
             tron_address = CryptoService._pubkey_to_tron_address(pubkey)
             
             return tron_address
             
+        except CryptoAddressGenerationError:
+            # Alt seviye hatayı yukarı fırlat
+            raise
         except Exception as e:
             logger.error(f"Adres türetme hatası: {e}")
-            return None
+            raise CryptoAddressGenerationError(f"xPub'dan adres türetilemedi: {e}") from e
     
     @staticmethod
     def _pubkey_to_tron_address(pubkey: bytes) -> str:
@@ -78,10 +94,10 @@ class CryptoService:
             return address
             
         except Exception as e:
-            logger.error(f"TRON adres oluşturma hatası: {e}")
-            # Fallback: basit bir mock adres döndür (geliştirme aşamasında)
-            mock_address = f"TQ{base64.b64encode(pubkey[:15]).decode('utf-8').replace('=', '').replace('+', '').replace('/', '')}MOCK"
-            return mock_address[:34]  # TRON adresleri 34 karakter
+            logger.error(f"KRİTİK HATA - TRON adres oluşturma başarısız: {e}")
+            # CRITICAL SECURITY: Asla sahte adres döndürme!
+            # Mock adres döndürmek müşteri ödemelerinin kaybolmasına sebep olabilir
+            raise CryptoAddressGenerationError(f"TRON adresi oluşturulamadı: {e}") from e
     
     @staticmethod
     def generate_payment_qr(address: str, amount: float, currency: str = "USDT") -> str:

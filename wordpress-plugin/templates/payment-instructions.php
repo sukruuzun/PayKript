@@ -186,13 +186,13 @@ jQuery(document).ready(function($) {
     // Ödeme durumu kontrol et
     function checkPaymentStatus() {
         $.ajax({
-            url: paykript_ajax.ajax_url,
+            url: '<?php echo admin_url('admin-ajax.php'); ?>',
             type: 'POST',
             data: {
                 action: 'paykript_check_payment',
                 order_id: orderId,
                 payment_id: paymentId,
-                nonce: paykript_ajax.nonce
+                nonce: '<?php echo wp_create_nonce('paykript_check_payment'); ?>'
             },
             success: function(response) {
                 if (response.payment_status === 'confirmed') {

@@ -39,16 +39,16 @@ async def create_payment_request(
     
     # Benzersiz adres oluştur
     address_index = wallet.address_index + 1
-    payment_address = CryptoService.derive_address_from_xpub(
-        wallet.xpub_key, 
-        address_index,
-        wallet.derivation_path
-    )
-    
-    if not payment_address:
+    try:
+        payment_address = CryptoService.derive_address_from_xpub(
+            wallet.xpub_key, 
+            address_index,
+            wallet.derivation_path
+        )
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Ödeme adresi oluşturulamadı"
+            detail=f"Ödeme adresi oluşturulamadı: {str(e)}"
         )
     
     # Ödeme süresini hesapla

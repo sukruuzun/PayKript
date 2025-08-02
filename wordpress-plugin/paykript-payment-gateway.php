@@ -220,4 +220,28 @@ register_uninstall_hook(__FILE__, 'paykript_uninstall');
 function paykript_uninstall() {
     // Eklenti verileri silinebilir (isteğe bağlı)
     delete_option('woocommerce_paykript_settings');
+}
+
+// AJAX handlers
+add_action('wp_ajax_paykript_check_payment', 'paykript_ajax_check_payment');
+add_action('wp_ajax_nopriv_paykript_check_payment', 'paykript_ajax_check_payment');
+
+function paykript_ajax_check_payment() {
+    // Nonce kontrolü
+    check_ajax_referer('paykript_check_payment', 'nonce');
+    
+    $order_id = intval($_POST['order_id']);
+    $payment_id = intval($_POST['payment_id']);
+    
+    $order = wc_get_order($order_id);
+    if (!$order) {
+        wp_send_json_error('Sipariş bulunamadı');
+        return;
+    }
+    
+    // PayKript API'den ödeme durumunu kontrol et
+    $gateway = new WC_Gateway_PayKript();
+    $payment_status = $gateway->check_payment_status($payment_id, $order_id);
+    
+    wp_send_json($payment_status);
 } 
