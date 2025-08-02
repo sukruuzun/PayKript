@@ -21,7 +21,7 @@ httpx==0.25.2
 requests==2.31.0
 
 # Crypto & Blockchain
-cryptography==41.0.8
+cryptography==41.0.7
 bip32==3.4
 tronpy==0.4.0
 base58==2.1.1
@@ -31,9 +31,6 @@ qrcode[pil]==7.4.2
 # Background tasks
 celery==5.3.4
 redis==5.0.1
-
-# CORS support
-python-cors==1.7.0
 
 # Data validation
 pydantic==2.5.0
