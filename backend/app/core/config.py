@@ -26,11 +26,13 @@ class Settings(BaseSettings):
     @field_validator("ALLOWED_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v) -> List[str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
+        if isinstance(v, str):
+            # Gelen metni virgüllerden ayır, boşlukları temizle ve boş elemanları atla
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        if isinstance(v, list):
             return v
-        raise ValueError(v)
+        # Eğer format beklenmedikse, boş bir liste döndürerek hatayı engelle
+        return []
     
     # Environment  
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
