@@ -7,6 +7,13 @@ LABEL description="PayKript Frontend - Railway Dynamic Port Support"
 
 # Copy static files
 COPY index.html /usr/share/nginx/html/
+
+# Copy favicon files
+COPY favicon.ico /usr/share/nginx/html/
+COPY favicon.svg /usr/share/nginx/html/
+COPY favicon.png /usr/share/nginx/html/
+
+# Copy assets directory
 COPY assets /usr/share/nginx/html/assets/
 
 # Copy the Nginx config template to templates directory
