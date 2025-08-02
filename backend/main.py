@@ -15,7 +15,9 @@ app = FastAPI(
     title="PayKript API",
     description="Kripto Ödeme Doğrulama Platformu API",
     version="1.0.0",
-    openapi_url=f"{settings.API_V1_STR}/openapi.json" if settings.ENVIRONMENT == "development" else None
+    docs_url=f"{settings.API_V1_STR}/docs",        # Swagger UI
+    redoc_url=f"{settings.API_V1_STR}/redoc",      # ReDoc
+    openapi_url=f"{settings.API_V1_STR}/openapi.json"  # OpenAPI spec
 )
 
 # CORS Middleware
