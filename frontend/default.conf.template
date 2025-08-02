@@ -1,7 +1,9 @@
-# PayKript Frontend - Nginx Configuration
+# PayKript Frontend - Nginx Dynamic Port Template
+# This template uses Railway's ${PORT} environment variable
 
 server {
-    listen 80;
+    # Listen on the port provided by Railway's PORT environment variable
+    listen ${PORT};
     server_name localhost;
     
     root /usr/share/nginx/html;
