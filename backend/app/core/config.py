@@ -20,19 +20,14 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 gün
     
-    # CORS
-    ALLOWED_ORIGINS: List[str] = []
-    
-    @field_validator("ALLOWED_ORIGINS", mode="before")
-    @classmethod
-    def assemble_cors_origins(cls, v) -> List[str]:
-        if isinstance(v, str):
-            # Gelen metni virgüllerden ayır, boşlukları temizle ve boş elemanları atla
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
-        if isinstance(v, list):
-            return v
-        # Eğer format beklenmedikse, boş bir liste döndürerek hatayı engelle
-        return []
+    # CORS - Railway uyumlu manual parsing
+    @property
+    def ALLOWED_ORIGINS(self) -> List[str]:
+        origins_str = os.getenv("ALLOWED_ORIGINS", "")
+        if not origins_str:
+            return []
+        # Virgüllerden ayır, boşlukları temizle, boş elemanları atla
+        return [origin.strip() for origin in origins_str.split(",") if origin.strip()]
     
     # Environment  
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
