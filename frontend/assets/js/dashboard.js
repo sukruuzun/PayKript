@@ -10,19 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('📄 DOM yüklendi, PayKript başlatılıyor');
     initializeDashboard();
     setupEventListeners();
-    
-    // Fallback: 15 saniye sonra loading'i kesinlikle gizle
-    setTimeout(() => {
-        console.log('⏰ Fallback timer: Loading overlay zorla gizleniyor');
-        hideLoading();
-    }, 15000);
 });
-
-// Acil durum: Sayfa yüklendikten 20 saniye sonra loading'i gizle
-setTimeout(() => {
-    console.log('🚨 Acil durum fallback: Loading overlay zorla gizleniyor');
-    hideLoading();
-}, 20000);
 
 // Dashboard başlatma
 function initializeDashboard() {
@@ -89,12 +77,9 @@ function showLogin() {
     try {
         document.getElementById('login-screen').classList.remove('hidden');
         document.getElementById('dashboard').classList.add('hidden');
-        document.getElementById('loading-overlay').classList.add('hidden');
-        console.log('✅ Login ekranı başarıyla gösterildi, loading gizlendi');
+        console.log('✅ Login ekranı başarıyla gösterildi');
     } catch (error) {
         console.error('❌ Login ekranı gösterme hatası:', error);
-        // En azından loading'i gizle
-        hideLoading();
     }
 }
 
@@ -105,34 +90,9 @@ function showDashboard() {
     try {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('dashboard').classList.remove('hidden');
-        document.getElementById('loading-overlay').classList.add('hidden');
-        console.log('✅ Dashboard başarıyla gösterildi, loading gizlendi');
+        console.log('✅ Dashboard başarıyla gösterildi');
     } catch (error) {
         console.error('❌ Dashboard gösterme hatası:', error);
-        // En azından loading'i gizle
-        hideLoading();
-    }
-}
-
-// Loading'i güvenli şekilde gizle
-function hideLoading() {
-    try {
-        const loadingElement = document.getElementById('loading-overlay');
-        if (loadingElement) {
-            loadingElement.classList.add('hidden');
-            console.log('✅ Loading overlay gizlendi');
-        }
-    } catch (error) {
-        console.error('❌ Loading gizleme hatası:', error);
-    }
-}
-
-// Loading göster/gizle
-function showLoading(show = true) {
-    if (show) {
-        document.getElementById('loading-overlay').classList.remove('hidden');
-    } else {
-        document.getElementById('loading-overlay').classList.add('hidden');
     }
 }
 
@@ -146,7 +106,7 @@ async function handleLogin(e) {
         password: formData.get('password')
     };
     
-    showLoading();
+    console.log('🔐 Login işlemi başlatılıyor...');
     
     try {
         const response = await api.login(data);
@@ -161,10 +121,11 @@ async function handleLogin(e) {
         loadDashboardData();
         showToast('Başarıyla giriş yapıldı!', 'success');
         
+        console.log('✅ Login başarılı!');
+        
     } catch (error) {
+        console.error('❌ Login hatası:', error);
         showToast(error.message || 'Giriş hatası', 'error');
-    } finally {
-        showLoading(false);
     }
 }
 
