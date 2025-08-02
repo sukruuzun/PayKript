@@ -2,7 +2,7 @@
 
 class PayKriptAPI {
     constructor() {
-        this.baseURL = 'https://paykript-production.up.railway.app/';
+        this.baseURL = 'https://paykript-production.up.railway.app';
         this.token = localStorage.getItem('paykript_token');
     }
 
