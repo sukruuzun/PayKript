@@ -345,6 +345,40 @@ class WC_Gateway_PayKript extends WC_Payment_Gateway {
         
         wp_enqueue_script('paykript-payment', plugin_dir_url(dirname(__FILE__)) . 'assets/payment.js', array('jquery'), '1.0.0', true);
         wp_enqueue_style('paykript-payment', plugin_dir_url(dirname(__FILE__)) . 'assets/payment.css', array(), '1.0.0');
+        
+        // Ödeme durum kontrolü için ayrı script (thank you sayfasında)
+        if (isset($_GET['paykript_payment'])) {
+            wp_enqueue_script('paykript-payment-status', plugin_dir_url(dirname(__FILE__)) . 'assets/payment-status.js', array('jquery'), '1.0.0', true);
+            
+            // Ödeme bilgilerini JavaScript'e geç
+            global $wp_query;
+            $order_id = $wp_query->get('order-received');
+            if ($order_id) {
+                $order = wc_get_order($order_id);
+                if ($order) {
+                    $payment_id = $order->get_meta('_paykript_payment_id');
+                    $payment_status_data = $this->check_payment_status($payment_id, $order_id);
+                    $current_time = current_time('timestamp');
+                    $expires_at = $order->get_meta('_paykript_expires_at');
+                    $expires_timestamp = $expires_at ? strtotime($expires_at) : 0;
+                    $time_remaining = max(0, $expires_timestamp - $current_time);
+                    
+                    wp_localize_script('paykript-payment-status', 'paykript_payment_data', array(
+                        'payment_id' => intval($payment_id),
+                        'order_id' => intval($order_id),
+                        'payment_status' => $payment_status_data['payment_status'] ?? 'unknown',
+                        'time_remaining' => $time_remaining,
+                        'ajax_url' => admin_url('admin-ajax.php'),
+                        'nonce' => wp_create_nonce('paykript_check_payment'),
+                        'check_payment_text' => __('Kontrol ediliyor...', 'paykript'),
+                        'check_payment_btn_text' => __('Ödeme Durumunu Kontrol Et', 'paykript'),
+                        'payment_confirmed_text' => __('Ödeme onaylandı! Yönlendiriliyorsunuz...', 'paykript'),
+                        'time_expired_text' => __('Süre doldu', 'paykript'),
+                        'copied_text' => __('Kopyalandı!', 'paykript')
+                    ));
+                }
+            }
+        }
     }
 }
 

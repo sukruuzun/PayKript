@@ -173,7 +173,7 @@ function paykript_frontend_scripts() {
         // AJAX endpoint'i
         wp_localize_script('paykript-checkout', 'paykript_ajax', [
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('paykript_nonce'),
+            'nonce' => wp_create_nonce('paykript_check_payment'),
             'check_payment_text' => __('Ödeme kontrol ediliyor...', 'paykript'),
             'payment_confirmed_text' => __('Ödeme onaylandı! Yönlendiriliyorsunuz...', 'paykript'),
             'payment_expired_text' => __('Ödeme süresi doldu. Lütfen tekrar deneyin.', 'paykript')
@@ -181,31 +181,7 @@ function paykript_frontend_scripts() {
     }
 }
 
-// AJAX: Ödeme durumu kontrolü
-add_action('wp_ajax_paykript_check_payment', 'paykript_check_payment_status');
-add_action('wp_ajax_nopriv_paykript_check_payment', 'paykript_check_payment_status');
-
-function paykript_check_payment_status() {
-    check_ajax_referer('paykript_nonce', 'nonce');
-    
-    $order_id = intval($_POST['order_id']);
-    $payment_id = intval($_POST['payment_id']);
-    
-    if (!$order_id || !$payment_id) {
-        wp_die('Geçersiz parametreler');
-    }
-    
-    $order = wc_get_order($order_id);
-    if (!$order) {
-        wp_die('Sipariş bulunamadı');
-    }
-    
-    // PayKript API'den ödeme durumunu kontrol et
-    $gateway = new WC_Gateway_PayKript();
-    $payment_status = $gateway->check_payment_status($payment_id, $order_id);
-    
-    wp_send_json($payment_status);
-}
+// AJAX: Ödeme durumu kontrolü (handled by paykript_ajax_check_payment below)
 
 // Çeviri dosyalarını yükle
 add_action('plugins_loaded', 'paykript_load_textdomain');
